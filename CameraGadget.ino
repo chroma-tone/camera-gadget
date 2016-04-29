@@ -46,8 +46,9 @@ void loop() {
   // put your main code here, to run repeatedly:
   t1.update();
   t2.update();
+
   int current_state = read_LCD_buttons(); 
-   update_state(current_state);
+  update_state(current_state);
 }
 void update_state(int state){
 if (state!=5){
@@ -154,8 +155,12 @@ void display_current_menu_value(){
 int read_LCD_buttons()
 {
  adc_key_in = analogRead(0);
- delay(100);// read the value from the sensor 
+// read the value from the sensor 
  if (adc_key_in > 1000) return btnNONE; // We make this the 1st option for speed reasons since it will be the most likely result
+
+ delay(50);
+ adc_key_in = analogRead(0);//debounce
+ delay(150);//no double press
  if (adc_key_in < 50)   return btnRIGHT;  
  if (adc_key_in < 195)  return btnUP; 
  if (adc_key_in < 380)  return btnDOWN; 
