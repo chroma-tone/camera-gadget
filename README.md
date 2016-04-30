@@ -1,7 +1,7 @@
 # camera-gadget
 Arduino controlled timelapse camera controller
 
-For timelapse, manually exposed photography.
+For timelapse, manually exposed photography. Using 'bulb' mode of a dlsr camera using a 3.5mm jack.
 
 Tested with the following equipment 
 Camera : Pentax K100D
