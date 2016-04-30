@@ -10,8 +10,10 @@ unsigned long exposureTimeMS = 2000;// oneMinute + thirtySeconds;
 unsigned long timeBetweenPhotoMS = 10000; // 3 * oneMinute;
 int photo_count = 0;
 int going = 0;
+int original_repeat_count = 10;
 int repeat_count = 10;
 int daytime_photo = 0;
+int test_mode = 0;
 Timer t1;
 Timer t2;
 
@@ -78,8 +80,16 @@ if (state!=5){
      }
    case btnSELECT:
      {
-      if (going == 0){
-        t1.every(exposureTimeMS + timeBetweenPhotoMS, stopTakingPhoto, repeat_count);
+      if (test_mode == 1){
+        photo_count = 0;
+        going = 1;
+        repeat_count = 1;
+        takePhoto();
+        t2.after(exposureTimeMS, stopTakingPhoto);
+      }
+      else if (going == 0){
+        repeat_count = original_repeat_count;
+        t1.every(exposureTimeMS + timeBetweenPhotoMS, stopTakingPhoto, repeat_count + 1);
         photo_count = 0;
         going = 1;
       }
@@ -106,10 +116,14 @@ void decrement_current_selected_value(){
     timeBetweenPhotoMS = timeBetweenPhotoMS - 5000;
   }
   else if (current_menu_state == 2){
-    repeat_count = repeat_count - 5;
+    original_repeat_count = original_repeat_count - 5;
+    
   }
     else if (current_menu_state == 3){
     daytime_photo = ( daytime_photo + 1 ) % 2;
+  }
+   else if (current_menu_state == 4){
+    test_mode = ( test_mode + 1 ) % 2;
   }
 }
 void increment_current_selected_value(){
@@ -124,11 +138,15 @@ void increment_current_selected_value(){
     timeBetweenPhotoMS = timeBetweenPhotoMS + 5000;
   }
   else if (current_menu_state == 2){
-    repeat_count = repeat_count + 5;
+    original_repeat_count = original_repeat_count + 5;
   }
   else if (current_menu_state == 3){
     daytime_photo = ( daytime_photo + 1 ) % 2;
   }
+  else if (current_menu_state == 4){
+    test_mode = ( test_mode + 1 ) % 2;
+  }
+  
 }
 
 void display_current_menu_value(){
@@ -146,10 +164,13 @@ void display_current_menu_value(){
     snprintf(menu_display_string,40,"gap %lu s", timeBetweenPhotoMS /1000 );
   }
   else if (current_menu_state == 2){
-    snprintf(menu_display_string,40,"num %d", repeat_count );
+    snprintf(menu_display_string,40,"num %d", original_repeat_count );
   }
   else if (current_menu_state == 3){
     snprintf(menu_display_string,40,"daytime = %d", daytime_photo );
+  }
+  else if (current_menu_state == 4){
+    snprintf(menu_display_string,40,"test mode = %d", test_mode);
   }
   lcd.print(menu_display_string);
 }
@@ -172,12 +193,12 @@ int read_LCD_buttons()
 }
 
 void increment_menu_state(){
-  current_menu_state = (current_menu_state + 1) % 4;
+  current_menu_state = (current_menu_state + 1) % 5;
 }
 
 void decrement_menu_state(){
   if (current_menu_state == 0){
-    current_menu_state = 3;
+    current_menu_state = 4;
   }else{
     current_menu_state = current_menu_state - 1;
   }
@@ -186,8 +207,10 @@ void decrement_menu_state(){
 
 void takePhoto(){
 
-    if (photo_count++ > repeat_count){
+    if (photo_count++ >= repeat_count){
       going = 0;
+      photo_count = 0;
+      repeat_count = original_repeat_count;
       lcd.clear();
       lcd.print("done");
       pinMode(exposurePin,INPUT);
