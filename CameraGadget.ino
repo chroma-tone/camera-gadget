@@ -188,6 +188,9 @@ void takePhoto(){
 
     if (photo_count++ > repeat_count){
       going = 0;
+      lcd.clear();
+      lcd.print("done");
+      pinMode(exposurePin,INPUT);
     }
     if (going == 1 ){
       digitalWrite(exposurePin,LOW);
