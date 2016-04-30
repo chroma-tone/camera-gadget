@@ -26,10 +26,6 @@ int adc_key_in  = 0;
 #define btnSELECT 4
 #define btnNONE   5
 
-#define OPTION_EXPOSURE_STATE 0
-#define OPTION_EXPOSURE_STATE 1
-#define OPTION_EXPOSURE_STATE 3
-
 int current_menu_state = 0;
 
 LiquidCrystal lcd(8, 9, 4, 5, 6, 7);
@@ -138,7 +134,13 @@ void increment_current_selected_value(){
 void display_current_menu_value(){
   char menu_display_string[40] = "";
   if (current_menu_state == 0){
-    snprintf(menu_display_string,40,"shutter%lums", exposureTimeMS );
+    if (exposureTimeMS > 2000){
+      snprintf(menu_display_string,40,"shutter %lu s", exposureTimeMS /1000 );
+    }
+    else
+    {
+      snprintf(menu_display_string,40,"shutter %lu ms", exposureTimeMS );
+    }
   }
   else if (current_menu_state == 1){
     snprintf(menu_display_string,40,"gap %lu s", timeBetweenPhotoMS /1000 );
